@@ -7,9 +7,9 @@ services:
       - .:/app
       - /app/.poetry
     environment:
-      MONGODB_HOST: mongodb
-      MONGODB_USERNAME: user
-      MONGODB_PASSWORD: password123
+      TRACKER_MONGODB_HOST: mongodb
+      TRACKER_MONGODB_USERNAME: user
+      TRACKER_MONGODB_PASSWORD: password123
     depends_on:
       - mongodb
 
