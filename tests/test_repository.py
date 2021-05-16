@@ -1,4 +1,4 @@
-from tracker.repository.mongo import mongo_client, mongo_database
+from tracker.repository import mongo_client, mongo_database
 
 
 def test_mongo_methods():

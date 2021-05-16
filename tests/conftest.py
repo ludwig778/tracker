@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from tracker.repository.mongo import key_collection, measure_collection
+from tracker.repository import key_collection, measure_collection
 
 
 @fixture(autouse=True, scope="package")

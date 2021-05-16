@@ -4,10 +4,10 @@ from tracker.models import Key, Measure
 
 
 @mark.parametrize("kwargs", [
-    {"key": "tests.key1"},
-    {"key": "tests.key2"},
-    {"key": "tests.key3"},
-    {"key": "lmaoooo.key3"},
+    {"name": "tests.key1"},
+    {"name": "tests.key2"},
+    {"name": "tests.key3"},
+    {"name": "lmaoooo.key3"},
 ])
 def test_create_keys(kwargs):
     assert Key.create(**kwargs)
@@ -15,7 +15,7 @@ def test_create_keys(kwargs):
 
 def test_create_key_exception():
     with raises(AssertionError, match="Key must be set"):
-        Key.create(key=None)
+        Key.create(name=None)
 
 
 def test_list_prefix_keys():
@@ -43,7 +43,7 @@ def test_delete_key():
 
 def test_update_key():
     key = Key.get("tests.key3")
-    key.update(description="Test description", key="tests.key4")
+    key.update(description="Test description", name="tests.key4")
 
     assert Key.get("tests.key4")
 

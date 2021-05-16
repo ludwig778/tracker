@@ -1,19 +1,50 @@
+from json import load, dump
 from os import environ
+from pathlib import Path
+from sys import exit
 
-TEST = environ.get("TEST", False)
+
+DEFAULT_MONGO_CONFIG = {
+    "username": None,
+    "password": None,
+    "host": None,
+    "port": None,
+    "database": "tracker",
+}
+TEST = environ.get("TRACKER_TEST", False)
 
 MONGO_CONFIG = {}
 
+if not TEST:
+    config_dir = Path.home() / ".config" / "tracker"
+    config_file = config_dir / "config.json"
+
+    if config_file.is_file():
+        with config_file.open() as fd:
+            MONGO_CONFIG = load(fd)
+    else:
+        config_dir.mkdir(parents=True, exist_ok=True)
+
+        config_file.touch()
+        with config_file.open(mode="w") as fd:
+            dump(DEFAULT_MONGO_CONFIG, fd, indent=4)
+            print(f"Tracker : Template configuration set at {config_file}")
+
+
 for key, default in (
-    ("MONGODB_USERNAME", None),
-    ("MONGODB_PASSWORD", None),
-    ("MONGODB_HOST",     None),
-    ("MONGODB_PORT",     27017)
+    ("TRACKER_MONGODB_USERNAME", None),
+    ("TRACKER_MONGODB_PASSWORD", None),
+    ("TRACKER_MONGODB_HOST",     None),
+    ("TRACKER_MONGODB_PORT",     27017),
+    ("TRACKER_MONGODB_DATABASE", "tracker")
 ):
+    short_key = key.replace("TRACKER_MONGODB_", "").lower()
     attr = environ.get(key, default)
 
-    assert attr, f"{key} must be set"
+    if not attr and not MONGO_CONFIG.get(short_key):
+        print(f"Tracker : {short_key} must be set")
+        exit(1)
 
-    MONGO_CONFIG[key.replace("MONGODB_", "").lower()] = attr
+    MONGO_CONFIG[short_key] = attr
 
-MONGO_DATABASE = environ.get("MONGODB_DATABASE", "tracker")
+MONGO_DATABASE = MONGO_CONFIG.pop("database")

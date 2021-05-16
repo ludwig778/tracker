@@ -1,41 +1,41 @@
-from tracker.repository.mongo import key_collection, measure_collection
+from tracker.repository import key_collection, measure_collection
 
 
 class Key:
-    def __init__(self, key=None, _id=None, description=None):
+    def __init__(self, name=None, _id=None, description=None):
         self.id = _id
-        self.key = key
+        self.name = name
         self.description = description
 
     @classmethod
-    def create(cls, key=None, **kwargs):
-        assert key, "Key must be set"
+    def create(cls, name=None, **kwargs):
+        assert name, "Key must be set"
 
-        if not (obj := cls.get(key)):
-            obj = cls(key, **kwargs)
+        if not (obj := cls.get(name)):
+            obj = cls(name, **kwargs)
             obj.id = key_collection.insert_one(obj.to_dict()).inserted_id
 
         return obj
 
     @classmethod
-    def get(cls, key):
-        key = key_collection.find_one({"key": key})
+    def get(cls, name):
+        key = key_collection.find_one({"name": name})
 
         if key:
             return cls(**key)
 
     def to_dict(self):
         return {
-            "key": self.key,
+            "name": self.name,
             "description": self.description
         }
 
     def __repr__(self):
-        return f"<Key: {self.key}>"
+        return f"<Key: {self.name}>"
 
     @classmethod
     def list_prefix(cls, prefix):
-        return cls.list(key={"$regex": prefix.replace(".", "[.]") + ".*"})
+        return cls.list(name={"$regex": prefix.replace(".", "[.]") + ".*"})
 
     @classmethod
     def list(cls, **kwargs):
@@ -49,17 +49,20 @@ class Key:
         new_data = {**self_data, **kwargs}
 
         if self_data != new_data:
-            key_collection.update_one({"key": self.key}, {"$set": new_data})
+            key_collection.update_one({"name": self.name}, {"$set": new_data})
 
             self.__dict__.update(new_data)
 
     def delete(self):
-        key_collection.delete_one({"key": self.key})
-        measure_collection.delete_many({"key": self.key})
+        key_collection.delete_one({"name": self.name})
+        measure_collection.delete_many({"key": self.name})
 
     @property
     def measures(self):
-        return Measure.list(key=self.key)
+        return Measure.list(key=self.name)
+
+    def add_measure(self, **kwargs):
+        return Measure.create(key=self.name, **kwargs)
 
 
 class Measure:
