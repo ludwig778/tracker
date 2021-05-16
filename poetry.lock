@@ -87,7 +87,7 @@ toml = ["toml"]
 
 [[package]]
 name = "decorator"
-version = "5.0.8"
+version = "5.0.9"
 description = "Decorators for Humans"
 category = "dev"
 optional = false
@@ -481,8 +481,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8.10"
-content-hash = "5d85317dbce03b9e26a3f2fc4e0dd8c893c7a91311c3c4a8160232bc3740ad13"
+python-versions = "^3.8"
+content-hash = "8769e3584ca2887655f4e637e4459f531676affdadd93709a78c0e688ae32b51"
 
 [metadata.files]
 appnope = [
@@ -572,8 +572,8 @@ coverage = [
     {file = "coverage-5.5.tar.gz", hash = "sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c"},
 ]
 decorator = [
-    {file = "decorator-5.0.8-py3-none-any.whl", hash = "sha256:77a3141f7f5837b5de43569c35508ca4570022ba501db8c8a2a8b292bd35772a"},
-    {file = "decorator-5.0.8.tar.gz", hash = "sha256:bff00cfb18698f9a19fa6400451fd7ea894f3845cedd7b8b7b0ce9c53171fefb"},
+    {file = "decorator-5.0.9-py3-none-any.whl", hash = "sha256:6e5c199c16f7a9f0e3a61a4a54b3d27e7dad0dbdde92b944426cb20914376323"},
+    {file = "decorator-5.0.9.tar.gz", hash = "sha256:72ecfba4320a893c53f9706bebb2d55c270c1e51a28789361aa93e4a21319ed5"},
 ]
 flake8 = [
     {file = "flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:bf8fd333346d844f616e8d47905ef3a3384edae6b4e9beb0c5101e25e3110907"},
