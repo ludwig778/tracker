@@ -20,9 +20,18 @@ piprot:
 
 sure: lint isort piprot
 
+test_on:
+	pytest -vs ${ARGS}
+
 tests:
-	pytest --cov=tracker --cov-append --cov-report html:coverage_html -vs
+	pytest -vs
 .PHONY: tests
+
+cov:
+	pytest --cov=tracker
+
+cov_html:
+	pytest --cov=tracker --cov-report html:coverage_html
 
 clean:
 	rm -rf coverage_html
