@@ -1,14 +1,14 @@
 from pytest import fixture
 
-from tracker.repository import key_collection, measure_collection
+from tracker.repository import mongo_repo
 
 
 @fixture(autouse=True, scope="package")
 def cleanup_mongo_repo():
-    key_collection.drop()
-    measure_collection.drop()
+    mongo_repo.drop("key")
+    mongo_repo.drop("measure")
 
     yield
 
-    key_collection.drop()
-    measure_collection.drop()
+    mongo_repo.drop("key")
+    mongo_repo.drop("measure")

@@ -10,6 +10,7 @@ DEFAULT_MONGO_CONFIG = {
     "host": None,
     "port": None,
     "database": "tracker",
+    "srv_mode": False
 }
 TEST = environ.get("TRACKER_TEST", False)
 
@@ -36,15 +37,19 @@ for key, default in (
     ("TRACKER_MONGODB_PASSWORD", None),
     ("TRACKER_MONGODB_HOST",     None),
     ("TRACKER_MONGODB_PORT",     27017),
-    ("TRACKER_MONGODB_DATABASE", "tracker")
+    ("TRACKER_MONGODB_DATABASE", "tracker"),
+    ("TRACKER_MONGODB_SRV_MODE", False),
 ):
     short_key = key.replace("TRACKER_MONGODB_", "").lower()
     attr = environ.get(key, default)
 
-    if not attr and not MONGO_CONFIG.get(short_key):
+    if attr is None and not MONGO_CONFIG.get(short_key):
         print(f"Tracker : {short_key} must be set")
         exit(1)
 
+    if key == "TRACKER_MONGODB_SRV_MODE" and isinstance(attr, str):
+        attr = attr.lower() in ("true", "1", "yes")
+
     MONGO_CONFIG[short_key] = attr
 
-MONGO_DATABASE = MONGO_CONFIG.pop("database")
+MONGO_DATABASE = MONGO_CONFIG.get("database")

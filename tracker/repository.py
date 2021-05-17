@@ -1,15 +1,39 @@
 from pymongo import MongoClient
 
-from tracker.settings import MONGO_CONFIG, MONGO_DATABASE, TEST
+from tracker.settings import MONGO_CONFIG, TEST
 
-mongo_client = MongoClient(**MONGO_CONFIG)
-mongo_database = getattr(mongo_client, MONGO_DATABASE)
 
-key_collection = getattr(
-    mongo_database,
-    ("test_" if TEST else "") + "key"
+class MongoRepository:
+    def __init__(self, **config):
+        self.config = config
+
+        self.connect()
+
+    def connect(self):
+        self._client = MongoClient(
+            self.get_uri().format(**self.config)
+        )
+        self.database = getattr(self._client, self.config.get("database"))
+
+    def get_uri(self):
+        if self.config.get("srv_mode"):
+            return "mongodb+srv://{username}:{password}@{host}/{database}?retryWrites=true&w=majority"
+
+        return "mongodb://{username}:{password}@{host}:{port}/{database}?authSource=admin"
+
+    def get_collection(self, name):
+        return getattr(
+            self.database,
+            ("test_" if TEST else "") + name
+        )
+
+    def drop(self, name):
+        return self.get_collection(name).drop()
+
+
+mongo_repo = MongoRepository(
+    **MONGO_CONFIG
 )
-measure_collection = getattr(
-    mongo_database,
-    ("test_" if TEST else "") + "measure"
-)
+
+key_collection = mongo_repo.get_collection("key")
+measure_collection = mongo_repo.get_collection("measure")
