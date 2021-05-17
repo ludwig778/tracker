@@ -35,7 +35,7 @@ pytest-cov = "^2.11.1"
 pytest-env = "^0.6.2"
 
 [tool.poetry.scripts]
-tracker = "tracker.app:run"
+tracker = "tracker:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

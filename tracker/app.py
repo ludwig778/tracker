@@ -71,7 +71,3 @@ class App:
     def show_keys(self):
         for k in sorted(map(lambda k: k.name, Key.list())):
             print(k)
-
-
-def run():
-    App().run()
