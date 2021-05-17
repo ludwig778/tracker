@@ -3,13 +3,10 @@ name = "tracker"
 version = "0.1.0"
 description = "Python terminal manual metric tracker and plotter."
 authors = ["Laurent Arthur <laurent.arthur75@gmail.com>"]
-
 license = "GPLv3"
-
 readme = "README.md"
-
+homepage = "https://github.com/ludwig778/tracker"
 repository = "https://github.com/ludwig778/tracker"
-
 classifiers = [
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX :: Linux",
@@ -17,12 +14,16 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 ]
+include = [
+    "LICENSE",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 pymongo = "^3.11.4"
 argcomplete = "^1.12.3"
 dnspython = "^2.1.0"
+plotext = "^2.3.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.0"

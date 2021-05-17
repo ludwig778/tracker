@@ -280,6 +280,14 @@ requests-futures = "*"
 six = "*"
 
 [[package]]
+name = "plotext"
+version = "2.3.1"
+description = "plotext plots data directly on terminal"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
@@ -497,7 +505,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ccb775005ddaf2c57a87f136e2adb29c89c46989017ea456cee1406eeb377fdb"
+content-hash = "3b38cbf1333324d52202f244386631dc5098f5a9c28d9d452e936be9fefb648f"
 
 [metadata.files]
 appnope = [
@@ -648,6 +656,10 @@ pickleshare = [
 ]
 piprot = [
     {file = "piprot-0.9.11.tar.gz", hash = "sha256:db48a26789a370149309e6585eac4ad1cc1dd239d834463a7df7cde01e2b396b"},
+]
+plotext = [
+    {file = "plotext-2.3.1-py3-none-any.whl", hash = "sha256:39110b25f3f878df78ff725b043e2214e86fb7af0f0fe8c18d59bb5cdd877ae5"},
+    {file = "plotext-2.3.1.tar.gz", hash = "sha256:c3f7acbaa5f6611d08674a23af21141a185e4290406893691573c17d362bb92f"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
