@@ -59,7 +59,13 @@ class Key:
 
     @property
     def measures(self):
-        return Measure.list(key=self.name)
+        return self.get_measures()
+
+    def get_measures(self, **kwargs):
+        return Measure.list(key=self.name, **kwargs)
+
+    def get_latest_measure(self):
+        return Measure.list(key=self.name, **kwargs)
 
     def add_measure(self, **kwargs):
         return Measure.create(key=self.name, **kwargs)
@@ -105,10 +111,16 @@ class Measure:
         return f"<Measure: {self.key} {self.timestamp}:{self.value}>"
 
     @classmethod
-    def list(cls, **kwargs):
+    def list(cls, limit=50, **kwargs):
         return [
             cls(**measure)
-            for measure in measure_collection.find(kwargs)
+            for measure in sorted(
+                measure_collection
+                .find(kwargs)
+                .sort("timestamp", -1)
+                .limit(limit),
+                key=lambda x: x["timestamp"]
+            )
         ]
 
     def update(self, **kwargs):

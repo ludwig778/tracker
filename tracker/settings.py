@@ -32,13 +32,13 @@ if not TEST:
             print(f"Tracker : Template configuration set at {config_file}")
 
 
-for key, default in (
-    ("TRACKER_MONGODB_USERNAME", None),
-    ("TRACKER_MONGODB_PASSWORD", None),
-    ("TRACKER_MONGODB_HOST",     None),
-    ("TRACKER_MONGODB_PORT",     27017),
-    ("TRACKER_MONGODB_DATABASE", "tracker"),
-    ("TRACKER_MONGODB_SRV_MODE", False),
+for key, default, transform in (
+    ("TRACKER_MONGODB_USERNAME", None, None),
+    ("TRACKER_MONGODB_PASSWORD", None, None),
+    ("TRACKER_MONGODB_HOST",     None, None),
+    ("TRACKER_MONGODB_PORT",     27017, int),
+    ("TRACKER_MONGODB_DATABASE", "tracker", None),
+    ("TRACKER_MONGODB_SRV_MODE", False, lambda v: isinstance(v, str) and v.lower() in ("true", "1", "yes")),
 ):
     short_key = key.replace("TRACKER_MONGODB_", "").lower()
     attr = environ.get(key, default)
@@ -47,9 +47,9 @@ for key, default in (
         print(f"Tracker : {short_key} must be set")
         exit(1)
 
-    if key == "TRACKER_MONGODB_SRV_MODE" and isinstance(attr, str):
-        attr = attr.lower() in ("true", "1", "yes")
+    if attr:
+        if transform:
+            attr = transform(attr)
 
-    MONGO_CONFIG[short_key] = attr
-
-MONGO_DATABASE = MONGO_CONFIG.get("database")
+        MONGO_CONFIG[short_key] = attr
+print(MONGO_CONFIG)

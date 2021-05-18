@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tracker"
-version = "0.1.0"
+version = "0.1.3"
 description = "Python terminal manual metric tracker and plotter."
 authors = ["Laurent Arthur <laurent.arthur75@gmail.com>"]
 license = "GPLv3"

@@ -33,6 +33,11 @@ cov:
 cov_html:
 	pytest --cov=tracker --cov-report html:coverage_html
 
+test_publish:
+	poetry build
+	poetry config repositories.testpypi https://test.pypi.org/legacy/
+	poetry publish -r testpypi
+
 clean:
 	rm -rf coverage_html
 	find . -name "*.pyc" -o -name "__pycache__"|xargs rm -rf
