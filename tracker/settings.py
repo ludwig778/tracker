@@ -1,59 +1,87 @@
-from json import load, dump
+from json import dump, load
 from os import environ
 from pathlib import Path
 from sys import exit
 
+from tracker.utils import check_boolean
 
-def check_boolean(value):
-    return isinstance(value, str) and value.lower() in ("true", "1", "yes")
+PREFIX = "TRACKER"
+
+TEST = environ.get(f"{PREFIX}_TEST", False)
 
 
-TEST = environ.get("TRACKER_TEST", False)
-
-DEFAULT_MONGO_CONFIG = {
-    "username": None,
-    "password": None,
-    "host":     None,
-    "port":     27017,
-    "database": "tracker",
-    "srv_mode": False
+CONFIG = {
+    "prefix": PREFIX,
+    "create_file": not TEST,
+    "config": {
+        "MONGODB": [
+            ("username", None,      None),
+            ("password", None,      None),
+            ("host",     None,      None),
+            ("port",     27017,     int),
+            ("database", "tracker", None),
+            ("srv_mode", False,     check_boolean)
+        ]
+    }
 }
-MONGO_CONFIG = DEFAULT_MONGO_CONFIG
 
 
-if not TEST:
-    config_dir = Path.home() / ".config" / "tracker"
-    config_file = config_dir / "config.json"
+class Settings:
+    def __init__(self, prefix=None, create_file=None, config=None):
+        self.prefix = prefix
+        self.create_file = create_file
+        self.config = config
 
-    if config_file.is_file():
-        with config_file.open() as fd:
-            MONGO_CONFIG = load(fd)
-    else:
-        config_dir.mkdir(parents=True, exist_ok=True)
+        self.parsed = {}
 
-        config_file.touch()
-        with config_file.open(mode="w") as fd:
-            dump(DEFAULT_MONGO_CONFIG, fd, indent=4)
-            print(f"Tracker : Template configuration set at {config_file}")
+        self.load()
+
+    def get_default(self):
+        return {
+            field: default
+            for prefix, config in self.config.items()
+            for field, default, _ in config
+        }
+
+    def load(self):
+        self.load_from_file()
+        self.load_from_env()
+
+    def load_from_file(self):
+        config_dir = Path.home() / ".config" / self.prefix.lower()
+        config_file = config_dir / "config.json"
+
+        if config_file.is_file():
+            with config_file.open() as fd:
+                self.parsed.update(load(fd))
+        else:
+            if not self.create_file:
+                return
+
+            config_dir.mkdir(parents=True, exist_ok=True)
+
+            config_file.touch()
+            with config_file.open(mode="w") as fd:
+                dump(self.get_default(), fd, indent=4)
+                print(f"Tracker : Template configuration set at {config_file}")
+
+    def load_from_env(self):
+        for prefix, config in self.config.items():
+            for field_name, default, transform in config:
+                env_name = f"{self.prefix}_{prefix}_{field_name}".upper()
+                attr = environ.get(env_name, default)
+
+                if attr is None and not self.parsed.get(field_name):
+                    print(f"Tracker : {field_name} must be set")
+                    exit(1)
+
+                if attr:
+                    if transform:
+                        attr = transform(attr)
+
+                    self.parsed[field_name] = attr
 
 
-for key, default, transform in (
-    ("TRACKER_MONGODB_USERNAME", None,      None),
-    ("TRACKER_MONGODB_PASSWORD", None,      None),
-    ("TRACKER_MONGODB_HOST",     None,      None),
-    ("TRACKER_MONGODB_PORT",     27017,     int),
-    ("TRACKER_MONGODB_DATABASE", "tracker", None),
-    ("TRACKER_MONGODB_SRV_MODE", False,     check_boolean)
-):
-    short_key = key.replace("TRACKER_MONGODB_", "").lower()
-    attr = environ.get(key, default)
+settings = Settings(**CONFIG)
 
-    if attr is None and not MONGO_CONFIG.get(short_key):
-        print(f"Tracker : {short_key} must be set")
-        exit(1)
-
-    if attr:
-        if transform:
-            attr = transform(attr)
-
-        MONGO_CONFIG[short_key] = attr
+MONGO_CONFIG = settings.parsed
