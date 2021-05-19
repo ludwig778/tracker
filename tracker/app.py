@@ -1,6 +1,8 @@
-from datetime import datetime
-from pprint import pprint as pp
+from datetime import datetime, timedelta
 
+from tabulate import tabulate
+
+from tracker.display import plot_measures
 from tracker.models import Key, Measure
 from tracker.parser import get_args
 
@@ -23,7 +25,7 @@ class App:
             self.handle_measure(key)
 
         elif self.args.key and not key:
-            print("MUST SET VALUE")
+            self.handle_non_existing_key(self.args.key)
 
         elif key and not self.args.value:
             self.show_measures(key)
@@ -54,20 +56,63 @@ class App:
         if self.args.incr:
             if measure := Measure.get(key=key.name, timestamp=timestamp):
                 measure.update(value=measure.value + 1)
-                print("MEASURE INCREMENTED", key, measure)
+                print("Measure incremented", key, measure)
             else:
                 measure = Measure.create(key=key.name, value=1, timestamp=timestamp)
-                print("MEASURE ADDED", key, measure)
+                print("Measure added", key, measure)
         else:
             measure = key.add_measure(
                 value=int(self.args.value),
                 timestamp=timestamp
             )
-            print("MEASURE ADDED", key, measure)
+            print("Measure added", key, measure)
+
+        self.show_measures(key)
+
+    def handle_non_existing_key(self, key):
+        keys = Key.list_prefix(key)
+
+        if not keys:
+            print("No values found")
+            return
+
+        print(tabulate(
+            [
+                {
+                    "key": key.name,
+                    "value": key.get_latest_measure().value
+                }
+                for key in sorted(Key.list(), key=lambda k: k.name)
+            ],
+            tablefmt="simple"
+        ))
 
     def show_measures(self, key):
-        print("SHOW MEASURES")
-        pp(key.measures)
+        timestamp = int((datetime.now() - timedelta(days=7)).strftime("%s"))
+
+        measures = key.get_measures(
+            limit=None,
+            timestamp={"$gt": timestamp}
+        )
+
+        if self.args.raw:
+            for measure in measures:
+                print(
+                    datetime.fromtimestamp(measure.timestamp),
+                    measure.timestamp,
+                    measure.value
+                )
+
+        elif not measures:
+            latest = key.get_latest_measure()
+
+            if latest:
+                print(f"Latest measure {datetime.fromtimestamp(latest.timestamp)}: value : {latest.value}")
+            else:
+                print("No measures")
+
+        else:
+            plot_measures(measures)
 
     def show_keys(self):
         for k in sorted(map(lambda k: k.name, Key.list())):
