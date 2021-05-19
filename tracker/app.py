@@ -38,7 +38,8 @@ class App:
             measures[0].delete()
 
     def delete_key(self, key):
-        key.delete()
+        if input(f"Are you sure to delete {key} ? [y/N] ").lower() == "y":
+            key.delete()
 
     def handle_measure(self, key):
         if not key:
