@@ -12,11 +12,11 @@ class App:
     def run(self):
         key = Key.get(self.args.key)
 
-        if self.args.delete_all:
-            self.delete_all()
+        if self.args.delete:
+            if key and self.args.timestamp:
+                self.delete_measure(key, self.args.timestamp)
 
-        elif self.args.delete:
-            if key:
+            elif key:
                 self.delete_key(key)
 
         elif self.args.value or self.args.incr:
@@ -31,11 +31,11 @@ class App:
         else:
             self.show_keys()
 
-    def delete_all(self):
-        print("DELETE ALL")
-        for key in Key.list():
-            print("delete", key)
-            key.delete()
+    def delete_measure(self, key, timestamp):
+        measures = key.get_measures(timestamp=timestamp, limit=None)
+
+        if measures:
+            measures[0].delete()
 
     def delete_key(self, key):
         key.delete()
