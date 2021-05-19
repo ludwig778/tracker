@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-ENV PATH=$PATH:/root/.poetry/bin/:/app
+ENV PATH=$PATH:/root/.poetry/bin/
 
 COPY pyproject.toml poetry.lock ./
 
