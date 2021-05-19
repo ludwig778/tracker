@@ -132,5 +132,7 @@ class App:
             plot_measures(measures)
 
     def show_keys(self):
-        for k in sorted(map(lambda k: k.name, Key.list())):
-            print(k)
+        print(tabulate([
+            [k]
+            for k in sorted(map(lambda k: k.name, Key.list()))
+        ]))
