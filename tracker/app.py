@@ -15,8 +15,8 @@ class App:
         key = Key.get(self.args.key)
 
         if self.args.delete:
-            if key and self.args.timestamp:
-                self.delete_measure(key, self.args.timestamp)
+            if key and (self.args.timestamp or self.args.date):
+                self.delete_measure(key)
 
             elif key:
                 self.delete_key(key)
@@ -33,8 +33,20 @@ class App:
         else:
             self.show_keys()
 
-    def delete_measure(self, key, timestamp):
-        measures = key.get_measures(timestamp=timestamp, limit=None)
+    def get_args_timestamp(self, strict=False):
+        if self.args.timestamp:
+            return self.args.timestamp
+        elif self.args.date:
+            return int(datetime.strptime(self.args.date, "%Y-%m-%d").strftime("%s"))
+        elif strict:
+            return
+        else:
+            return int(datetime.now().strftime("%s"))
+
+    def delete_measure(self, key):
+        timestamp = self.get_args_timestamp(strict=True)
+
+        measures = key.get_measures(timestamp={"$eq": timestamp}, limit=None)
 
         if measures:
             measures[0].delete()
@@ -51,21 +63,25 @@ class App:
         if self.args.day:
             now = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        timestamp = self.args.timestamp or int(now.strftime("%s"))
+        timestamp = self.get_args_timestamp()
 
         if self.args.incr:
             if measure := Measure.get(key=key.name, timestamp=timestamp):
                 measure.update(value=measure.value + 1)
-                print("Measure incremented", key, measure)
+                print("Measure incremented to", measure.value)
             else:
                 measure = Measure.create(key=key.name, value=1, timestamp=timestamp)
-                print("Measure added", key, measure)
+                print("Measure added")
         else:
-            measure = key.add_measure(
-                value=int(self.args.value),
-                timestamp=timestamp
-            )
-            print("Measure added", key, measure)
+            if measure := Measure.get(key=key.name, timestamp=timestamp):
+                measure.update(value=int(self.args.value))
+                print("Measure updated")
+            else:
+                measure = key.add_measure(
+                    value=int(self.args.value),
+                    timestamp=timestamp
+                )
+                print("Measure added")
 
         self.show_measures(key)
 
@@ -76,16 +92,17 @@ class App:
             print("No values found")
             return
 
-        print(tabulate(
-            [
-                {
-                    "key": key.name,
-                    "value": key.get_latest_measure().value
-                }
-                for key in sorted(Key.list(), key=lambda k: k.name)
-            ],
-            tablefmt="simple"
-        ))
+        data = []
+        for key in sorted(Key.list(), key=lambda k: k.name):
+            last_measure = key.get_latest_measure()
+            last_value = last_measure.value if last_measure else None
+
+            data.append({
+                "key": key.name,
+                "value": last_value
+            })
+
+        print(tabulate(data, tablefmt="simple"))
 
     def show_measures(self, key):
         timestamp = int((datetime.now() - timedelta(days=7)).strftime("%s"))

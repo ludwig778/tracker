@@ -141,7 +141,14 @@ class Measure:
         new_data = {**self_data, **kwargs}
 
         if self_data != new_data:
-            measure_collection.update_one({"key": self.key}, {"$set": new_data})
+            measure_collection.update_one(
+                {
+                    "key": self.key,
+                    "timestamp": self.timestamp
+                }, {
+                    "$set": new_data
+                }
+            )
 
             self.__dict__.update(new_data)
 
