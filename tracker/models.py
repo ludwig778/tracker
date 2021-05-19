@@ -112,13 +112,19 @@ class Measure:
 
     @classmethod
     def list(cls, limit=50, **kwargs):
+        cursor = (
+            measure_collection
+            .find(kwargs)
+            .sort("timestamp", -1)
+        )
+
+        if limit:
+            cursor = cursor.limit(limit)
+
         return [
             cls(**measure)
             for measure in sorted(
-                measure_collection
-                .find(kwargs)
-                .sort("timestamp", -1)
-                .limit(limit),
+                cursor,
                 key=lambda x: x["timestamp"]
             )
         ]
