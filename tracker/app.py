@@ -103,7 +103,7 @@ class App:
             return
 
         data = []
-        for key in sorted(Key.list(), key=lambda k: k.name):
+        for key in sorted(keys, key=lambda k: k.name):
             last_measure = key.get_latest_measure()
             last_value = last_measure.value if last_measure else None
 
