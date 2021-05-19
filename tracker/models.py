@@ -153,4 +153,4 @@ class Measure:
             self.__dict__.update(new_data)
 
     def delete(self):
-        measure_collection.delete_one({"key": self.key})
+        measure_collection.delete_one({"key": self.key, "timestamp": self.timestamp})
