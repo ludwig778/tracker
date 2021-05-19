@@ -1,5 +1,6 @@
-import argcomplete
 import argparse
+
+import argcomplete
 
 from tracker.models import Key
 
@@ -17,7 +18,7 @@ def get_args():
     parser.add_argument("--day", "-t", action="store_true")
     parser.add_argument("--describe", "-e", action="store_true")
     parser.add_argument("--delete", "-d", action="store_true")
-    parser.add_argument("--delete-all", action="store_true")
+    parser.add_argument("--raw", "-r", action="store_true")
     argcomplete.autocomplete(parser)
 
     return parser.parse_args()
