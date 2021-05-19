@@ -25,7 +25,12 @@ class App:
             self.handle_measure(key)
 
         elif self.args.key and not key:
-            self.handle_non_existing_key(self.args.key)
+
+            if self.args.empty:
+                self.create_key(self.args.key)
+
+            else:
+                self.handle_non_existing_key(self.args.key)
 
         elif key and not self.args.value:
             self.show_measures(key)
@@ -54,6 +59,11 @@ class App:
     def delete_key(self, key):
         if input(f"Are you sure to delete {key} ? [y/N] ").lower() == "y":
             key.delete()
+
+    def create_key(self, key):
+        Key.create(name=key)
+
+        print("Empty key created")
 
     def handle_measure(self, key):
         if not key:
