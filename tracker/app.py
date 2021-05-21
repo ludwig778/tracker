@@ -63,8 +63,10 @@ class App:
             measures[0].delete()
 
     def delete_key(self, key):
-        if input(f"Are you sure to delete {key} ? [y/N] ").lower() == "y":
+        if self.args.force or input(f"Are you sure to delete {key} ? [y/N] ").lower() == "y":
             key.delete()
+
+            print(f"Key {key.name} deleted")
 
     def create_key(self, key):
         Key.create(name=key)

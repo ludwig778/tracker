@@ -25,6 +25,7 @@ def get_args():
     parser.add_argument("--empty",  "-e", action="store_true")
     parser.add_argument("--delete", "-d", action="store_true")
     parser.add_argument("--raw",    "-r", action="store_true")
+    parser.add_argument("--force",  "-f", action="store_true")
 
     argcomplete.autocomplete(parser)
 
