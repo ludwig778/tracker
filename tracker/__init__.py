@@ -2,4 +2,7 @@ from tracker.app import App
 
 
 def main():
-    App().run()
+    try:
+        App().run()
+    except KeyboardInterrupt:
+        pass
