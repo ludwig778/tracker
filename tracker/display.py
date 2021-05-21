@@ -8,11 +8,14 @@ MAXIMUM_WIDTH = None
 DATETIME_FORMAT = "%d/%m"
 
 
-def plot_measures(measures):
+def plot_measures(measures, offset=0):
     start_timestamp = datetime.now() - timedelta(days=7)
     now = datetime.now()
 
     width, height = plt.terminal_size()
+
+    if offset:
+        height -= offset
 
     if MAXIMUM_HEIGHT and MAXIMUM_HEIGHT < height:
         height = MAXIMUM_HEIGHT

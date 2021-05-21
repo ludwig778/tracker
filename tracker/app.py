@@ -39,7 +39,7 @@ class App:
                 self.handle_non_existing_key(self.args.key)
 
         elif key and not self.args.value:
-            self.show_measures(key)
+            self.show_measures(key, show_latest=True)
 
         else:
             self.show_keys()
@@ -152,7 +152,7 @@ class App:
 
         print(tabulate(data, tablefmt="simple"))
 
-    def show_measures(self, key):
+    def show_measures(self, key, show_latest=False):
         timestamp = int((datetime.now() - timedelta(days=7)).strftime("%s"))
 
         measures = key.get_measures(
@@ -177,7 +177,10 @@ class App:
                 print("No measures")
 
         else:
-            plot_measures(measures)
+            plot_measures(measures, offset=3 if show_latest else 0)
+
+        if show_latest:
+            print(f"\nLatest measure : {measures[-1].value}")
 
     def show_keys(self):
         print(tabulate([
