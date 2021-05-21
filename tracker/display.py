@@ -40,9 +40,6 @@ def plot_measures(measures):
 
         day += timedelta(days=1)
 
-    xticks.append(int(now.strftime("%s")))
-    xlabels.append(now.strftime(DATETIME_FORMAT))
-
     plt.xlim(int(start_timestamp.strftime("%s")), int(now.strftime("%s")))
 
     plt.xticks(xticks, xlabels)
