@@ -24,6 +24,9 @@ class App:
         elif self.args.value or self.args.incr:
             self.handle_measure(key)
 
+        elif self.args.rename:
+            self.handle_key_rename(key, self.args.rename)
+
         elif self.args.key and not key:
 
             if self.args.empty:
@@ -94,6 +97,18 @@ class App:
                 print("Measure added")
 
         self.show_measures(key)
+
+    def handle_key_rename(self, key, name):
+        if not key:
+            print("Valid key must be provided")
+
+        elif Key.get(name):
+            print("New key already exists")
+
+        elif key.name != name:
+            Measure.rename(key.name, name)
+
+            key.rename(name)
 
     def handle_non_existing_key(self, key):
         keys = Key.list_prefix(key)

@@ -44,7 +44,7 @@ class Key:
             for key in key_collection.find(kwargs)
         ]
 
-    def update(self, **kwargs):
+    def update(self, name=None, **kwargs):
         self_data = self.to_dict()
         new_data = {**self_data, **kwargs}
 
@@ -52,6 +52,14 @@ class Key:
             key_collection.update_one({"name": self.name}, {"$set": new_data})
 
             self.__dict__.update(new_data)
+
+        if name and name != self.name:
+            key_collection.update_one({"name": self.name}, {"$set": {"name": name}})
+
+            self.name = name
+
+    def rename(self, name):
+        self.update(name=name)
 
     def delete(self):
         key_collection.delete_one({"name": self.name})
@@ -128,6 +136,13 @@ class Measure:
                 key=lambda x: x["timestamp"]
             )
         ]
+
+    @classmethod
+    def rename(cls, old_name, new_name):
+        measures = cls.list(key=old_name, limit=None)
+
+        for measure in measures:
+            measure.update(key=new_name)
 
     @classmethod
     def latest(cls, **kwargs):
