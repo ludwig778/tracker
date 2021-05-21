@@ -21,6 +21,9 @@ class App:
             elif key:
                 self.delete_key(key)
 
+        elif self.args.description is not None:
+            self.handle_description(key)
+
         elif self.args.value or self.args.incr:
             self.handle_measure(key)
 
@@ -110,6 +113,17 @@ class App:
 
             key.rename(name)
 
+    def handle_description(self, key):
+        if not key:
+            print("Valid key must be provided")
+
+        description = " ".join(self.args.description)
+
+        if len(description) > 64:
+            print("Description is too long")
+
+        key.update(description=description)
+
     def handle_non_existing_key(self, key):
         keys = Key.list_prefix(key)
 
@@ -124,7 +138,8 @@ class App:
 
             data.append({
                 "key": key.name,
-                "value": last_value
+                "value": last_value,
+                "description": key.description
             })
 
         print(tabulate(data, tablefmt="simple"))
@@ -158,6 +173,6 @@ class App:
 
     def show_keys(self):
         print(tabulate([
-            [k]
-            for k in sorted(map(lambda k: k.name, Key.list()))
+            {"name": k.name, "description": k.description}
+            for k in sorted(Key.list(), key=lambda k: k.name)
         ]))
