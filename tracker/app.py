@@ -72,8 +72,12 @@ class App:
         print("Empty key created")
 
     def handle_measure(self, key):
+        created = False
+
         if not key:
             key = Key.create(name=self.args.key)
+
+            created = True
 
         now = datetime.now()
         if self.args.day:
@@ -85,6 +89,7 @@ class App:
             if measure := Measure.get(key=key.name, timestamp=timestamp):
                 measure.update(value=measure.value + 1)
                 print("Measure incremented to", measure.value)
+
             else:
                 measure = Measure.create(key=key.name, value=1, timestamp=timestamp)
                 print("Measure added")
@@ -99,7 +104,8 @@ class App:
                 )
                 print("Measure added")
 
-        self.show_measures(key)
+        if not created:
+            self.show_measures(key)
 
     def handle_key_rename(self, key, name):
         if not key:
