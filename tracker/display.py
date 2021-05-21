@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 import plotext as plt
 
-HEIGHT_RATIO = .4
-WIDTH_RATIO = 1
+MAXIMUM_HEIGHT = 25
+MAXIMUM_WIDTH = None
 
 DATETIME_FORMAT = "%d/%m"
 
@@ -12,7 +12,13 @@ def plot_measures(measures):
     start_timestamp = datetime.now() - timedelta(days=7)
     now = datetime.now()
 
-    w, h = plt.terminal_size()
+    width, height = plt.terminal_size()
+
+    if MAXIMUM_HEIGHT and MAXIMUM_HEIGHT < height:
+        height = MAXIMUM_HEIGHT
+
+    if MAXIMUM_WIDTH and MAXIMUM_WIDTH < width:
+        width = MAXIMUM_WIDTH
 
     values_y = [m.value for m in measures]
     values_x = [m.timestamp for m in measures]
@@ -40,6 +46,6 @@ def plot_measures(measures):
     plt.xlim(int(start_timestamp.strftime("%s")), int(now.strftime("%s")))
 
     plt.xticks(xticks, xlabels)
-    plt.figsize(w * WIDTH_RATIO, h * HEIGHT_RATIO)
+    plt.figsize(width, height)
 
     plt.show()
